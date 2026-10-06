@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>IronstrikeServers</AssemblyName>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Interop assemblies are reference-only; never copy them to output. -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <NoWarn>$(NoWarn);CS0649;CS0169</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.788" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+  </ItemGroup>
+
+  <!-- Reference assemblies. refs/ is committed so CI and a clean clone can build with no
+       game files present. Override with -p:InteropDir=<path to BepInEx/interop> to build
+       against the set the game actually generated at runtime. -->
+  <PropertyGroup Condition="'$(InteropDir)' == ''">
+    <InteropDir>$(MSBuildThisFileDirectory)../refs</InteropDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- GameAssembly.dll holds the game's own gameplay types (GM, NetworkLifecycle, Fighter...) -->
+    <Reference Include="$(InteropDir)/GameAssembly.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(InteropDir)/UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(InteropDir)/UnityEngine.InputLegacyModule.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Unity.InputSystem.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(InteropDir)/UnityEngine.UIModule.dll" Private="false" />
+    <Reference Include="$(InteropDir)/UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Il2Cppmscorlib.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Fusion.Runtime.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Fusion.Common.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Fusion.Realtime.dll" Private="false" />
+    <Reference Include="$(InteropDir)/Fusion.Sockets.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="CheckInterop" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('$(InteropDir)/GameAssembly.dll')"
+           Text="Interop assemblies not found at '$(InteropDir)'. Pass -p:InteropDir=&lt;path to BepInEx/interop&gt;." />
+  </Target>
+
+</Project>

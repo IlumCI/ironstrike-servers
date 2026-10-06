@@ -1,0 +1,8 @@
+bin/
+obj/
+*.user
+dump/
+.interop-build/
+dist/
+interop/
+!refs/
